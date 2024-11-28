@@ -134,7 +134,7 @@ export default function Index({ consent }: IndexProps): JSX.Element {
   useEffect(() => {
     if (serviceDataFromSearchInput) {
       serviceDataFromSearchInput?.message?.searchResult?.map((service: ServiceAvailability) => {
-        getProviderNameFromId(service.provider_id)
+        // getProviderNameFromId(service.provider_id)
         if (
           !serviceDataFromSearch?.some(
             innerService => innerService.service_id === String(service?.service_id),
@@ -150,7 +150,6 @@ export default function Index({ consent }: IndexProps): JSX.Element {
             service_image_url: service?.service_image_url,
           })
         }
-        console.log(serviceDataFromSearch)
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -158,7 +157,7 @@ export default function Index({ consent }: IndexProps): JSX.Element {
 
   useEffect(() => {
     serviceData?.map(service => {
-      getProviderNameFromId(service.provider_id)
+      // getProviderNameFromId(service.provider_id)
       regularServiceData?.push({
         service_id: String(service.service_id),
         provider_id: String(service?.provider_id),
@@ -168,7 +167,6 @@ export default function Index({ consent }: IndexProps): JSX.Element {
         short_description: service.description,
         service_image_url: service?.service_image_url,
       })
-      console.log(regularServiceData)
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [serviceData])
@@ -231,24 +229,23 @@ export default function Index({ consent }: IndexProps): JSX.Element {
         />
       )}
 
-      <div className="relative h-screen">
+      <div className="h-screen  pt-20 flex flex-col items-center">
         {showChat && <ChatBox handleChatBox={handleChatBox} contactInfo={contactInfo} />}
-        <div>
-          <FullScreenSearchBar
-            queryData={servicesToBeUsed}
-            query={query}
-            setQuery={setQuery}
-            fetchDataOnEnter={fetchDataOnEnter}
-            toggle={servicesToBeUsed?.length > 0 ? true : false}
-          />
-          <DataCards
-            data={servicesToBeUsed}
-            userType={userType}
-            handleClickInfoForChat={handleClickInfoForChat}
-            clickChat={handleChatBox}
-            handleDeleteService={handleDeleteService}
-          />
-        </div>
+
+        <FullScreenSearchBar
+          queryData={servicesToBeUsed}
+          query={query}
+          setQuery={setQuery}
+          fetchDataOnEnter={fetchDataOnEnter}
+          toggle={servicesToBeUsed?.length > 0 ? true : false}
+        />
+        <DataCards
+          data={servicesToBeUsed}
+          userType={userType}
+          handleClickInfoForChat={handleClickInfoForChat}
+          clickChat={handleChatBox}
+          handleDeleteService={handleDeleteService}
+        />
       </div>
     </main>
   )

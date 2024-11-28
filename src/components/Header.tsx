@@ -44,7 +44,7 @@ const Header = () => {
   }
 
   return (
-    <header className="flex items-center justify-between flex-wrap py-4 px-6 sticky top-0 bg-white z-50">
+    <header className="flex items-center justify-between flex-wrap py-4 px-6 fixed top-0 bg-white z-50 w-full">
       <div className="flex items-center flex-shrink-0 mr-6">
         <Link
           href="/user-dashboard"
