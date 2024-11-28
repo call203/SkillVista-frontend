@@ -187,8 +187,8 @@ export default function Index() {
             changedImage
               ? changedImage
               : userState.profile_picture_url
-              ? userState.profile_picture_url
-              : '/user.png'
+                ? userState.profile_picture_url
+                : '/user.png'
           }
           width={180}
           height={180}

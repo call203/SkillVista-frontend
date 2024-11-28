@@ -38,7 +38,7 @@ const ChatBox = ({ handleChatBox, contactInfo }: ChatBoxProps) => {
               Number(item.user_id) === userId
             : Number(item.provider_id) === userId,
         )
-        console.log(messages)
+
         dispatch(setChatListState(messages))
         if (userType === 'service_provider') {
           const reverseArray = res.message.reverse()
@@ -123,16 +123,16 @@ const ChatBox = ({ handleChatBox, contactInfo }: ChatBoxProps) => {
                         ? 'justify-end'
                         : 'justify-start'
                       : item.who === 'user'
-                      ? 'justify-start'
-                      : 'justify-end'
+                        ? 'justify-start'
+                        : 'justify-end'
                   const conditionBackground =
                     userType === 'user'
                       ? item.who === 'user'
                         ? 'bg-mainblue text-white'
                         : 'bg-slate-300'
                       : item.who === 'user'
-                      ? 'bg-slate-300'
-                      : 'bg-mainblue text-white'
+                        ? 'bg-slate-300'
+                        : 'bg-mainblue text-white'
 
                   return (
                     <div key={index} className={`py-3 flex ${conditionPotion}`}>

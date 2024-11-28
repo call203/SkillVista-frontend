@@ -63,7 +63,7 @@ const Index: FC<IndexProps> = () => {
         formik.setFieldValue('serviceType', res.message[0]?.service_name)
       }
     })
-  }, [])
+  }, [formik])
 
   useEffect(() => {
     getServiceType()

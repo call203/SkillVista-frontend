@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import { MouseEventHandler, useCallback, useEffect, useMemo, useState } from 'react'
+import { MouseEventHandler, useEffect, useMemo, useState } from 'react'
 import { Modal } from '@/components/ui/modal'
 import { getCookies, setCookie } from 'cookies-next'
 import { useSelector } from 'react-redux'
@@ -11,8 +11,9 @@ import { METHODS } from '@/lib/utils/ApiMethods'
 import DataCards from '@/components/user-dashboard/DataCards'
 import { ChatBox } from '@/components/user-dashboard/chatbox'
 import { selectUserType } from '@/store/userSlice'
+
 interface IndexProps {
-  consent: boolean
+  pageProps: { consent: boolean; listData: TUserDashboardTable[] }
 }
 
 interface ServerSideProps {
@@ -39,7 +40,9 @@ type TServiceDataFromSearch = {
   }
 }
 
-export default function Index({ consent }: IndexProps): JSX.Element {
+export default function Index({ pageProps }: IndexProps): JSX.Element {
+  const { consent, listData } = pageProps
+
   const [showChat, setShowChat] = useState(false)
   const [cookieModal, setCookieModal] = useState(false)
   const [contactInfo, setContactInfo] = useState<TUserDashboardTable>()
@@ -52,7 +55,6 @@ export default function Index({ consent }: IndexProps): JSX.Element {
   const [serviceDataFromSearchInput, setServiceDataFromSearchInput] = useState<
     TServiceDataFromSearch | undefined
   >()
-  const [providerName, setProviderName] = useState('')
 
   const serviceDataFromSearch: TUserDashboardTable[] = useMemo(() => {
     return []
@@ -65,29 +67,6 @@ export default function Index({ consent }: IndexProps): JSX.Element {
   // Remove the below when unecessary -1Solon
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const authState = useSelector(selectAuthState)
-
-  const getServiceData = useCallback(async () => {
-    try {
-      if (authState === true) {
-        const serviceData = await apiRequest({ method: METHODS.GET, path: '/services' })
-        setServiceData(serviceData?.message)
-      }
-    } catch (err) {
-      console.log(err)
-    }
-  }, [authState, setServiceData])
-
-  const getProviderNameFromId = async (providerId: number) => {
-    try {
-      const provider = await apiRequest({
-        method: METHODS.GET,
-        path: `/users/${String(providerId)}`,
-      })
-      setProviderName(provider?.message?.username)
-    } catch (err) {
-      console.log(err)
-    }
-  }
 
   const handleDeleteService = (service_id: string): MouseEventHandler<HTMLButtonElement> => {
     return async event => {
@@ -127,9 +106,9 @@ export default function Index({ consent }: IndexProps): JSX.Element {
     }
   }
 
-  useEffect(() => {
-    if (!serviceData) getServiceData()
-  }, [getServiceData, serviceData])
+  // useEffect(() => {
+  //   if (!serviceData) getServiceData()
+  // }, [getServiceData, serviceData])
 
   useEffect(() => {
     if (serviceDataFromSearchInput) {
@@ -153,7 +132,7 @@ export default function Index({ consent }: IndexProps): JSX.Element {
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [providerName, serviceDataFromSearch, serviceDataFromSearchInput?.message?.searchResult])
+  }, [serviceDataFromSearch, serviceDataFromSearchInput?.message?.searchResult])
 
   useEffect(() => {
     serviceData?.map(service => {
@@ -163,7 +142,7 @@ export default function Index({ consent }: IndexProps): JSX.Element {
         provider_id: String(service?.provider_id),
         availability: service.availability,
         pricing: String(service.pricing),
-        provider: providerName,
+        provider: '',
         short_description: service.description,
         service_image_url: service?.service_image_url,
       })
@@ -233,14 +212,14 @@ export default function Index({ consent }: IndexProps): JSX.Element {
         {showChat && <ChatBox handleChatBox={handleChatBox} contactInfo={contactInfo} />}
 
         <FullScreenSearchBar
-          queryData={servicesToBeUsed}
+          queryData={listData}
           query={query}
           setQuery={setQuery}
           fetchDataOnEnter={fetchDataOnEnter}
           toggle={servicesToBeUsed?.length > 0 ? true : false}
         />
         <DataCards
-          data={servicesToBeUsed}
+          data={listData}
           userType={userType}
           handleClickInfoForChat={handleClickInfoForChat}
           clickChat={handleChatBox}
@@ -252,8 +231,14 @@ export default function Index({ consent }: IndexProps): JSX.Element {
 }
 
 export async function getServerSideProps({ req, res }: ServerSideProps) {
-  const data = getCookies({ req, res })
-  const consent = data['consent'] || {}
+  try {
+    const cookies = getCookies({ req, res })
+    const listData = await apiRequest({ method: METHODS.GET, path: '/services' })
+    const consent = cookies['consent'] || {}
 
-  return { props: { consent } }
+    return { props: { consent: consent, listData: listData?.message } }
+  } catch (error) {
+    console.error('Error in getServerSideProps:', error)
+    return { props: { consent: {}, listData: [] } }
+  }
 }

@@ -1,9 +1,19 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  images: ['image/avif', 'image/webp'],
+
   images: {
+    deviceSizes: [786, 1024],
+
     domains: ['images.unsplash.com', 'i.ibb.co', 'avatars.githubusercontent.com'],
   },
+  remotePatterns: [
+    {
+      protocol: 'https',
+      hostname: 'avatars.githubusercontent.com',
+    },
+  ],
   async headers() {
     return [
       {

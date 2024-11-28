@@ -25,7 +25,7 @@ const Header = () => {
         dispatch(setUserType(res?.userType))
       })
     }
-  }, [])
+  }, [dispatch])
 
   const handleToggle = () => {
     setToggle(toggle => !toggle)
